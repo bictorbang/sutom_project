@@ -3,10 +3,10 @@
 *.ipynb
 
 test.py
-
+app.py
+sutom_helper.py
 
 /sutomax/__pycache__
-setup.py
 install.sh
 __main__.py
 
