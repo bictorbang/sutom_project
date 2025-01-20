@@ -25,6 +25,8 @@ class sutom_helper(Set):
                 self.words.add(wd)
                 self.words_len[len(word)].add(word)
 
+        self.current_word_len = 0
+        self.current_word_first = ""
         self.current_words = self.words 
         self.letters = defaultdict(int) 
     
@@ -38,17 +40,19 @@ class sutom_helper(Set):
 
     def __contains__(self, value: str):
         wd = value.strip().upper()
-        return wd in self.words
+        return wd in self.current_words
     
     def __iter__(self):
-        return iter(self.words)
+        return iter(self.current_words)
     
     def __len__(self):
-        return len(self.words)
+        return len(self.current_words)
 
     def reset(self):
         self.letters = defaultdict(int)
         self.current_words = self.words
+        self.current_word_len = 0
+        self.current_word_first = ""
 
     def new_turn(self):
         self.letters = defaultdict(int)
@@ -58,7 +62,7 @@ class sutom_helper(Set):
         print(f"Il y a {len(self.current_words)} mot(s) correspondant(s).")
         return len(self.current_words)
     
-    def guess(self):
+    def random_guess(self):
         word = random.choice(list(self.current_words))
         print(f"Essayez {word} !")
         return word
@@ -67,12 +71,14 @@ class sutom_helper(Set):
         # Première information : on restreint la recherche en
         # fonction de la longueur du mot à trouver.
         self.current_words = self.words_len[word_length] # liste
+        self.current_word_len = word_length
         
     def first_letter(self, first_letter):
         # Deuxième information : on restreint la recherche en 
         # fonction de la première lettre du mot à trouver.
         self.current_words = {word for word in self.current_words if word.startswith(first_letter)}
         self.letters[first_letter]+=1
+        self.current_word_first = first_letter
     '''
     def last_letter(self, last_letter):
         self.current_words = {word for word in self.current_words if word.endswith(last_letter)}
