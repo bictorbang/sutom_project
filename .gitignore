@@ -11,3 +11,5 @@ install.sh
 __main__.py
 
 /sutomax.egg-info
+
+__pycache__
