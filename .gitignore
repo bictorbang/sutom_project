@@ -3,8 +3,6 @@
 *.ipynb
 
 test.py
-app.py
-sutom_helper.py
 
 /sutomax/__pycache__
 install.sh
