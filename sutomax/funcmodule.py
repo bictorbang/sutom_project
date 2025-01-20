@@ -11,7 +11,7 @@ GUESSER_WORDS = {
 
 RESULT_WORDS = {
     1: ["1", "RETOUR", "AUTRE", "A", "B", "BACK", "OTHER", "R"],
-    2: ["2", "GAGNÉ", "GAGNE", "TERMINÉ", "TERMINE", "TROUVÉ", "TROUVE", "OK", "Q", "T", "G"]
+    2: ["2", "GAGNÉ", "GAGNE", "TERMINÉ", "TERMINE", "TROUVÉ", "TROUVE", "OK", "Q", "T", "G", "Y"]
 }
 
 def lookup_words(word, lookup):
