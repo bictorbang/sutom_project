@@ -3,3 +3,11 @@
 *.ipynb
 
 test.py
+
+/sutomax
+/sutomax/__pycache__
+setup.py
+install.sh
+__main__.py
+
+/sutomax.egg-info

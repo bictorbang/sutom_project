@@ -10,12 +10,14 @@ import regex as re
 
 WORD_MIN_SIZE = 6
 WORD_MAX_SIZE = 10
+WORD_FILE = "data/listeMotsProposables.ts"
+
 
 class sutom_helper(Set):
     def __init__(self, words: set):
         self.words = set() # Dictionnaire complet des mots valides
         self.words_len = defaultdict(set) # Mots rangés par taille        
-        self.min_size, self.max_size = (WORD_MIN_SIZE, WORD_MAX_SIZE)
+        #self.min_size, self.max_size = (WORD_MIN_SIZE, WORD_MAX_SIZE)
 
         for word in words:
             wd = word.strip().upper()
@@ -25,6 +27,18 @@ class sutom_helper(Set):
 
         self.current_words = self.words 
         self.letters = defaultdict(int) 
+        #self.red_letter = defaultdict(int)
+        #self.yellow_letter = defaultdict(int)
+        #self.no_letter = []
+        #self.solution = ""
+
+    @classmethod
+    def load_words(helper, file_name = WORD_FILE, sep = " "):
+        words = set()
+        with open(file_name, encoding="utf-8", mode="r") as f:
+            for line in f.readlines()[2:-2]:
+                words.add(line.strip().split(",")[0][1:-1])
+        return helper(words)
 
     def __contains__(self, value: str):
         wd = value.strip().upper()
@@ -39,6 +53,9 @@ class sutom_helper(Set):
     def reset(self):
         self.letters = defaultdict(int)
         self.current_words = self.words
+
+    def new_turn(self):
+        self.letters = defaultdict(int)
 
     # information
     def info(self):
@@ -65,18 +82,31 @@ class sutom_helper(Set):
         # les lettres rouges et . sont des emplacements libres
         # TODO: remplacer automatiquement un mauvais formatage :
         # autoriser les patterns avec "-*," etc au lieu de "."
-        self.current_words = {word for word in self.current_words if re.match(pattern.upper(), word)}
         for letter in pattern.strip("."):
             self.letters[letter]+=1
+        self.current_words = {word for word in self.current_words if re.match(pattern.upper(), word)}
 
 
-    def yellow_letters(self, letters):
-        return
 
+    def yellow_letters(self, pattern):
+        # pattern est de la forme "..D.E..E" où D, E sont 
+        # des lettres jaunes. On ignore les lettres rouges mais 
+        # attention à l'emplacement des lettres jaunes !
+        # TODO: de même que pour red_letters().
+        for letter in pattern.strip("."):
+            self.letters[letter]+=1        
+        pattern = re.sub("([A-Z])", r"[^\1]", pattern.upper())
+        self.current_words = {word for word in self.current_words if re.match(pattern, word)}
+        
 
     def not_in_word(self, letters):
         for letter in letters:
-            self.current_words = {word for word in self.current_words if letter not in word}
+            if letter not in self.letters:
+                self.current_words = {word for word in self.current_words if letter not in word}
+            else:
+                count = self.letters[letter]
+                pattern = f"^([^{letter}]*{letter}[^{letter}]*){{{count}}}$"
+                self.current_words = {word for word in self.current_words if re.match(pattern, word)}
 
 
 

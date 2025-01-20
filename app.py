@@ -9,7 +9,6 @@ def main(args):
     return
 
 
-print("oups")
 
 if __name__ == "__main__":
     
