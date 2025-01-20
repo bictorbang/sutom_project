@@ -101,8 +101,11 @@ class sutom_helper(Set):
         # des lettres jaunes. On ignore les lettres rouges mais 
         # attention à l'emplacement des lettres jaunes !
         # TODO: de même que pour red_letters().
-        for letter in pattern.strip("."):
-            self.letters[letter]+=1        
+        for letter in pattern.replace(".", ""):
+            self.letters[letter]+=1
+        # assure que les lettres jaunes sont présentes dans le mot
+        self.current_words = {word for word in self.current_words if set(pattern.replace('.', '')) <= set(word)} 
+        # assure que les lettres jaunes sont dans une autre position !       
         pattern = re.sub("([A-Z])", r"[^\1]", pattern.upper())
         self.current_words = {word for word in self.current_words if re.match(pattern, word)}
         
