@@ -9,6 +9,10 @@ import random
 # Pas de nom propre
 # Pas d'espace, d'apostrophe ou de trait d'union.
 
+
+#TODO: attribut current_word_len ne sert à rien (à vérifier)
+
+
 WORD_MIN_SIZE = 6
 WORD_MAX_SIZE = 10
 WORD_FILE = "data/listeMotsProposables.ts"
@@ -29,6 +33,8 @@ class sutom_helper(Set):
         self.current_word_first = ""
         self.current_words = self.words 
         self.letters = defaultdict(int) 
+
+        self.target = "" # Pour jouer solo / tester 
     
     @classmethod
     def load_words(helper, file_name = WORD_FILE, sep = " "):
@@ -47,12 +53,24 @@ class sutom_helper(Set):
     
     def __len__(self):
         return len(self.current_words)
+    
+    ## SETTERS and GETTERS
+
+    def set_target(self, target):
+        self.target = target
+
+    def get_target(self):
+        return self.target
+    
+    def get_current_words(self):
+        return self.current_words
 
     def reset(self):
         self.letters = defaultdict(int)
         self.current_words = self.words
         self.current_word_len = 0
         self.current_word_first = ""
+        self.set_target("")
 
     def new_turn(self):
         self.letters = defaultdict(int)
@@ -64,7 +82,6 @@ class sutom_helper(Set):
     
     def random_guess(self):
         word = random.choice(list(self.current_words))
-        print(f"Essayez {word} !")
         return word
     
     def word_length(self, word_length):

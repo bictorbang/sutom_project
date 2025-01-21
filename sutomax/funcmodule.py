@@ -37,7 +37,9 @@ def valid_pool(helper):
 def guesser(helper, choice):
     match choice:
         case 1:
-            return helper.random_guess()
+            random_guess = helper.random_guess()
+            click.echo(f'Essayez{random_guess} !')
+            return random_guess
         case 2:
             manual_guess = click.prompt('Inscrivez le mot choisi ').upper()
             while not valid_word(manual_guess, helper):
@@ -123,3 +125,4 @@ def next_turn(helper, guess, result):
 
 def endgame():
     return click.confirm("Voulez-vous rejouer ?")
+    
