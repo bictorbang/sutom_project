@@ -11,7 +11,7 @@
 
 Reprenons les règles décrites par TUSMO :
 
-![Règles du jeu](image.png)
+![Règles du jeu](data/image.png)
 
 A cela s'ajoute des méta-règles concernant la génération du mot mystère :
 
