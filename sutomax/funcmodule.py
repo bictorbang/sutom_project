@@ -1,5 +1,6 @@
 import click 
 import regex as re
+from .classmodule import sutom_helper
 
 GUESSER_WORDS = {
     1: ["1", "&", "GUESS", "HASARD", "RANDOM", "R"],
@@ -13,6 +14,65 @@ RESULT_WORDS = {
     1: ["1", "RETOUR", "AUTRE", "A", "B", "BACK", "OTHER", "R"],
     2: ["2", "GAGNÉ", "GAGNE", "TERMINÉ", "TERMINE", "TROUVÉ", "TROUVE", "OK", "Q", "T", "G", "Y"]
 }
+
+FIRST_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "L", "M", "N",
+                 "O", "P", "R", "S", "T", "U", "V"]
+
+def get_result(target, guess):
+    # Donne le résultat de la tentative.
+    # Exemple - mot à deviner (helper.target) : "MAESTRO", tentative (guess) : "MAOUSSE"
+    # Renvoie "RRJ.J.J"
+    result = ""
+    red_idx = []
+    # La première boucle détecte les lettres ROUGES.
+    for idx, (l_target, l_guess) in enumerate(zip(target, guess)):
+        if l_target == l_guess:
+            result += "R"
+            red_idx.append(idx) # on garde en mémoire les indices des lettres ROUGES
+        else: 
+            result += "."
+
+    # result est de la forme "RR.....". On va désormais rajouter les lettres JAUNES.
+    
+    yellow_target = [ch for i, ch in enumerate(target) if i not in red_idx]
+
+    for idx, l_guess in enumerate(guess):
+        if idx not in red_idx:                      # Si la lettre n'est pas rouge
+            if l_guess in yellow_target:        # et que la lettre est présente... 
+                result = list(result)
+                result[idx] = "J"               # obligé de convertir en liste pour des raisons de typage.
+                result = ''.join(result)
+                yellow_target.remove(l_guess)
+
+    return result
+
+def is_solution(result):
+    return all(flag == "R" for flag in result)
+
+
+def solver(helper):  
+    logs = []
+    target = helper.get_target()
+    helper.word_length(len(target)) # Initialisation
+    helper.first_letter(target[0])  # Initialisation
+
+    while len(helper) > 0: # len(helper) est strictement décroissant à chaque itération, la boucle se termine forcément
+        helper.new_turn()
+        guess = helper.random_guess()
+        logs.append(guess)
+        result = get_result(target, guess)
+
+        if is_solution(result): 
+            return len(logs), logs
+    
+        red, yellow, not_there = translate(guess, result)
+        helper.red_letters(red)
+        helper.yellow_letters(yellow)
+        helper.not_in_word(not_there)
+
+    if len(logs) > 6 or guess != helper.target: 
+        logs.append("perdu")
+        return len(logs) - 1, logs
 
 def lookup_words(word, lookup):
     for l in lookup.values():
@@ -38,7 +98,7 @@ def guesser(helper, choice):
     match choice:
         case 1:
             random_guess = helper.random_guess()
-            click.echo(f'Essayez{random_guess} !')
+            click.echo(f'Essayez {random_guess} !')
             return random_guess
         case 2:
             manual_guess = click.prompt('Inscrivez le mot choisi ').upper()
@@ -122,7 +182,16 @@ def next_turn(helper, guess, result):
     helper.info()
     guess, result = user_turn(helper)
     return guess, result
+ 
+def session():
+    helper = sutom_helper.load_words()
+    session = True
+    while session:
+        helper.reset()
+        guess, result = first_turn(helper)
+        # TODO: remplacer tout caractère non A-Z en "." (regex)
+        # TODO: empêcher le programme de crash en cas de mauvaise manip.
+        while guess:
+            guess, result = next_turn(helper, guess, result)
+        session = click.confirm("Voulez-vous rejouer ?")
 
-def endgame():
-    return click.confirm("Voulez-vous rejouer ?")
-    
